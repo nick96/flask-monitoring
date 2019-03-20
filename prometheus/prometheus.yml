@@ -1,0 +1,23 @@
+global:
+  scrape_internal: 15s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+  - static_configs:
+      - targets:
+        - alertmanger:9093
+
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets:
+          - 'prometheus:9090'
+          - 'alertmanager:9093'
+          - 'grafana:300'
+  - job_name: 'flask_app'
+    scrape_intervals: 5s
+    static_configs:
+      - targets:
+          - 'app:5000'
