@@ -1,0 +1,10 @@
+route:
+    receiver: 'slack'
+
+receivers:
+    - name: 'slack'
+      slack_configs:
+          - send_resolved: true
+            username: 'hera-alertmanager'
+            channel: '#alerts'
+            api_url: "https://hooks.slack.com/services/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"
