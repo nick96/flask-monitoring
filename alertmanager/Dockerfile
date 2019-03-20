@@ -1,6 +1,3 @@
-FROM alertmanager:v0.16.1
-
-RUN mkdir /mgr
-WORKDIR /mgr
+FROM prom/alertmanager:v0.16.1
 
 COPY ./alertmanager.yml /etc/alertmanager/config.yml
