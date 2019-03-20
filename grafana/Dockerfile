@@ -1,5 +1,4 @@
 FROM grafana/grafana:6.0.2
 
 ADD ./provisioning /etc/grafana/provisioning
-ADD ./config.ini /etc/grafana/config.ini
-# ADD ./dashboards /var/lib/grafana/dashboard
+ADD ./grafana.ini /etc/grafana/grafana.ini
