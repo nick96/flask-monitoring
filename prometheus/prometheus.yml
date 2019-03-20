@@ -1,5 +1,5 @@
 global:
-  scrape_internal: 15s
+  scrape_interval: 15s
   evaluation_interval: 15s
 
 alerting:
@@ -17,7 +17,7 @@ scrape_configs:
           - 'alertmanager:9093'
           - 'grafana:300'
   - job_name: 'flask_app'
-    scrape_intervals: 5s
+    scrape_interval: 5s
     static_configs:
       - targets:
           - 'app:5000'
