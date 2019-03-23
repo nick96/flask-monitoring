@@ -16,6 +16,44 @@ variable "alertmanager_port" {
   default = 9093
 }
 
+#############
+# Templates #
+#############
+
+data "template_file" "alertmanager_config_template" {
+  template = "${path.module}/alertmanager/alertmanager.yml.tpl"
+
+  vars = {
+    web_hook_uri = "${var.slack_webhook_uri}"
+  }
+}
+
+resource "local_file" "alertmanager_config" {
+  filename = "${path.module}/alertmanager/alertmanager.yml"
+  content  = "${data.template_file.alertmanager_config_template.rendered}"
+
+  provisioner "local-exec" {
+    command = "chmod u=rw ${path.module}/alertmanager/alertmanager.yml"
+  }
+}
+
+data "template_file" "grafana_main_dashboard_template" {
+  template = "${file("${path.module}/grafana/dashboards/main_dashboard.json.tpl")}"
+
+  vars = {
+    apps = "flask_app:5000,prometheus:9090,alertmanager:9093,grafana:3000"
+  }
+}
+
+resource "local_file" "grafana_main_dashboard" {
+  filename = "${path.module}/grafana/dashboards/main_dashboard.json"
+  content  = "${data.template_file.grafana_main_dashboard_template.rendered}"
+
+  provisioner "local-exec" {
+    command = "chmod u=rw ${path.module}/grafana/dashboards/main_dashboard.json"
+  }
+}
+
 ################
 # Build images #
 ################
@@ -40,23 +78,6 @@ resource "null_resource" "images" {
   provisioner "local-exec" {
     command = "docker build -t flask-monitoring/alertmanager -f ${path.module}/alertmanager/Dockerfile ${path.module}/alertmanager"
   }
-}
-
-#############
-# Templates #
-#############
-
-data "template_file" "alertmanager" {
-  template = "${file("${path.module}/alertmanager/alertmanager.yml.tpl")}"
-
-  vars = {
-    web_hook_uri = "${var.slack_webhook_uri}"
-  }
-}
-
-resource "local_file" "alertmanager_file" {
-  filename = "${path.module}/alertmanager/alertmanager.yml"
-  content  = "${data.template_file.alertmanager.rendered}"
 }
 
 ############
@@ -84,6 +105,10 @@ resource "docker_container" "flask-app" {
   networks_advanced {
     name = "prom"
   }
+
+  depends_on = [
+    "null_resource.images",
+  ]
 }
 
 resource "docker_container" "grafana" {
@@ -99,17 +124,16 @@ resource "docker_container" "grafana" {
   networks_advanced {
     name = "prom"
   }
+
+  depends_on = [
+    "null_resource.images",
+  ]
 }
 
 resource "docker_container" "prometheus" {
   name    = "prometheus"
   image   = "flask-monitoring/prometheus"
   restart = "unless-stopped"
-
-  volumes {
-    host_path      = "${path.module}/prometheus/data"
-    container_path = "/prometheus"
-  }
 
   ports {
     internal = "${var.prometheus_port}"
@@ -119,17 +143,16 @@ resource "docker_container" "prometheus" {
   networks_advanced {
     name = "prom"
   }
+
+  depends_on = [
+    "null_resource.images",
+  ]
 }
 
 resource "docker_container" "alertmanager" {
   name    = "alertmanager"
   image   = "flask-monitoring/alertmanager"
   restart = "unless-stopped"
-
-  volumes {
-    host_path      = "${path.module}/alertmanager/data"
-    container_path = "/alertmanager"
-  }
 
   ports {
     internal = "${var.alertmanager_port}"
@@ -139,4 +162,8 @@ resource "docker_container" "alertmanager" {
   networks_advanced {
     name = "prom"
   }
+
+  depends_on = [
+    "null_resource.images",
+  ]
 }
