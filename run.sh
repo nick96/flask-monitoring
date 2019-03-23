@@ -7,7 +7,11 @@ echo "Stopping running containers"
 echo "Deleting existing contiainers"
 [ -z "$(docker ps -q)" ] || docker rm -f $(docker ps -q)
 echo "Deleting images specific to project"
-docker rmi -f $(docker images | grep flask-monitoring | awk '{ print $3 }')
+images=$(docker images | grep flask-monitoring | awk '{ print $3 }')
+if [ ! -z "$images" ]
+then
+    docker rmi -f $images
+fi
 
 terraform plan
 
