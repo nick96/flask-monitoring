@@ -16,6 +16,8 @@ variable "alertmanager_port" {
   default = 9093
 }
 
+variable "grafana_admin_password" {}
+
 #############
 # Templates #
 #############
@@ -34,23 +36,6 @@ resource "local_file" "alertmanager_config" {
 
   provisioner "local-exec" {
     command = "chmod u=rw ${path.module}/alertmanager/alertmanager.yml"
-  }
-}
-
-data "template_file" "grafana_main_dashboard_template" {
-  template = "${file("${path.module}/grafana/dashboards/main_dashboard.json.tpl")}"
-
-  vars = {
-    apps = "flask_app:5000,prometheus:9090,alertmanager:9093,grafana:3000"
-  }
-}
-
-resource "local_file" "grafana_main_dashboard" {
-  filename = "${path.module}/grafana/dashboards/main_dashboard.json"
-  content  = "${data.template_file.grafana_main_dashboard_template.rendered}"
-
-  provisioner "local-exec" {
-    command = "chmod u=rw ${path.module}/grafana/dashboards/main_dashboard.json"
   }
 }
 
@@ -127,6 +112,10 @@ resource "docker_container" "grafana" {
 
   depends_on = [
     "null_resource.images",
+  ]
+
+  env = [
+    "GF_SECURITY_ADMIN_PASSWORD=${var.grafana_admin_password}",
   ]
 }
 
