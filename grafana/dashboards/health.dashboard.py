@@ -21,14 +21,27 @@ dashboard = G.Dashboard(
         G.Row(
             panels=[
                 G.SingleStat(
-                    title=app["name"],
+                    editable=True,
+                    colorBackground=True,
+                    colorValue=False,
+                    colors=[G.ORANGE, G.GREEN, G.RED],
                     dataSource="Prometheus",
-                    description="",
+                    gauge=G.Gauge(
+                        maxValue=100,
+                        minValue=0,
+                        show=False,
+                        thresholdLabels=False,
+                        thresholdMarkers=True,
+                    ),
+                    title=app["name"],
                     targets=[
                         G.Target(
                             expr='up{{instance="{hostname}:{port}"}}'.format(
                                 hostname=app["hostname"], port=app["port"]
-                            )
+                            ),
+                            intervalFactor=2,
+                            legendFormat="",
+                            step=4,
                         )
                     ],
                     span=2,
@@ -39,23 +52,14 @@ dashboard = G.Dashboard(
                         G.ValueMap(op="=", text="Down", value="0"),
                         G.ValueMap(op="=", text="Up", value="1"),
                     ],
-                    valueName="current",
                     sparkline=G.SparkLine(
                         fillColor=G.RGBA(31, 118, 109, 0.18),
                         full=False,
                         lineColor=G.RGB(31, 120, 193),
                         show=False,
                     ),
-                    gauge=G.Gauge(
-                        maxValue=100,
-                        minValue=0,
-                        show=False,
-                        thresholdLabels=False,
-                        thresholdMarkers=True,
-                    ),
-                    maxDataPoints=100,
-                    nullPointMode="connected",
                     rangeMaps=[G.RangeMap(start=None, text="N/A", end=None)],
+                    valueName="current",
                 )
                 for app in APPS
             ]
