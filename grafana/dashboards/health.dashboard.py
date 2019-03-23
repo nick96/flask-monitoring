@@ -19,7 +19,7 @@ dashboard = G.Dashboard(
     title="System health",
     rows=[
         G.Row(
-            title="Service status"
+            title="Service status",
             panels=[
                 G.SingleStat(
                     editable=True,
