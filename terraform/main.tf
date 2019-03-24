@@ -23,7 +23,7 @@ variable "grafana_admin_password" {}
 #############
 
 data "template_file" "alertmanager_config_template" {
-  template = "${path.module}/alertmanager/alertmanager.yml.tpl"
+  template = "${path.module}/../alertmanager/alertmanager.yml.tpl"
 
   vars = {
     web_hook_uri = "${var.slack_webhook_uri}"
@@ -31,11 +31,11 @@ data "template_file" "alertmanager_config_template" {
 }
 
 resource "local_file" "alertmanager_config" {
-  filename = "${path.module}/alertmanager/alertmanager.yml"
+  filename = "${path.module}/../alertmanager/alertmanager.yml"
   content  = "${data.template_file.alertmanager_config_template.rendered}"
 
   provisioner "local-exec" {
-    command = "chmod u=rw ${path.module}/alertmanager/alertmanager.yml"
+    command = "chmod u=rw ${path.module}/../alertmanager/alertmanager.yml"
   }
 }
 
@@ -49,19 +49,19 @@ resource "null_resource" "images" {
   }
 
   provisioner "local-exec" {
-    command = "docker build -t flask-monitoring/flask-app -f ${path.module}/flask-app/Dockerfile ${path.module}/flask-app"
+    command = "docker build -t flask-monitoring/flask-app -f ${path.module}/../flask-app/Dockerfile ${path.module}/../flask-app"
   }
 
   provisioner "local-exec" {
-    command = "docker build -t flask-monitoring/prometheus -f ${path.module}/prometheus/Dockerfile ${path.module}/prometheus"
+    command = "docker build -t flask-monitoring/prometheus -f ${path.module}/../prometheus/Dockerfile ${path.module}/../prometheus"
   }
 
   provisioner "local-exec" {
-    command = "docker build -t flask-monitoring/grafana -f ${path.module}/grafana/Dockerfile ${path.module}/grafana"
+    command = "docker build -t flask-monitoring/grafana -f ${path.module}/../grafana/Dockerfile ${path.module}/../grafana"
   }
 
   provisioner "local-exec" {
-    command = "docker build -t flask-monitoring/alertmanager -f ${path.module}/alertmanager/Dockerfile ${path.module}/alertmanager"
+    command = "docker build -t flask-monitoring/alertmanager -f ${path.module}/../alertmanager/Dockerfile ${path.module}/../alertmanager"
   }
 }
 
