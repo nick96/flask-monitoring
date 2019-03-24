@@ -2,6 +2,8 @@
 
 set -e
 
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
 echo "Stopping running containers"
 [ -z "$(docker ps -q)" ] || docker stop $(docker ps -q)
 echo "Deleting existing contiainers"
