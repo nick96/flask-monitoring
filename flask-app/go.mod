@@ -3,11 +3,13 @@ module github.com/nick96/flask-monitoring/flask-app
 go 1.12
 
 require (
-	github.com/containerd/containerd v1.2.5
+	github.com/containerd/containerd v1.2.3
 	github.com/containerd/continuity v0.0.0-20181203112020-004b46473808 // indirect
+	github.com/containerd/cri v1.11.1 // indirect
 	github.com/containerd/fifo v0.0.0-20190226154929-a9fb20d87448 // indirect
 	github.com/containerd/typeurl v0.0.0-20190228175220-2a93cfde8c20 // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
+	github.com/docker/docker v1.13.1 // indirect
 	github.com/docker/go-events v0.0.0-20170721190031-9461782956ad // indirect
 	github.com/gogo/googleapis v1.1.0 // indirect
 	github.com/gogo/protobuf v1.2.1 // indirect
