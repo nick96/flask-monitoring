@@ -19,7 +19,8 @@ const (
 	containerName string = "flask-app"
 )
 
-func flaskApp() error {
+// FlaskApp builds the container image for flask-app.
+func FlaskApp() error {
 	socketPath := "/run/containerd/containerd.sock"
 	client, err := containerd.New(socketPath)
 	if err != nil {
