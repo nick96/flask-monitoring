@@ -20,8 +20,7 @@ const (
 )
 
 // FlaskApp builds the container image for flask-app.
-func FlaskApp() error {
-	socketPath := "/run/containerd/containerd.sock"
+func FlaskApp(socketPath string) error {
 	client, err := containerd.New(socketPath)
 	if err != nil {
 		return err
